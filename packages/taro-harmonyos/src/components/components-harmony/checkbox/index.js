@@ -1,1 +1,1 @@
-export const checkbox = {}
+export default {}

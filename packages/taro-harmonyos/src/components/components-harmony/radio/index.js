@@ -1,1 +1,1 @@
-export const radios = {}
+export default {}

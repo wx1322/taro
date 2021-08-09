@@ -1,4 +1,6 @@
 import { RecursiveTemplate, Shortcuts } from '@tarojs/shared'
+import { fs } from '@tarojs/helper'
+import * as path from 'path'
 
 export class Template extends RecursiveTemplate {
   Adapter = {
@@ -12,10 +14,7 @@ export class Template extends RecursiveTemplate {
     type: 'harmonyos'
   }
 
-  nativeComps = [
-    'checkbox',
-    'radio'
-  ]
+  nativeComps: string[]
 
   usedNativeComps: string[] = []
 
@@ -24,6 +23,8 @@ export class Template extends RecursiveTemplate {
     this.voidElements.add('button')
     this.voidElements.add('image')
     this.voidElements.add('static-image')
+
+    this.nativeComps = fs.readdirSync(path.resolve(__dirname, './components-harmony'))
   }
 
   buildHeaderTemplate = (componentConfig) => {
@@ -33,7 +34,7 @@ export class Template extends RecursiveTemplate {
       this.usedNativeComps = Array.from<string>(componentConfig.includes).filter(name => this.nativeComps.includes(name))
     }
 
-    const elements = this.usedNativeComps.reduce((str, name) => str + `<element name="${name}" src="./components-harmony/${name}/index.hml"></element>\n`, '')
+    const elements = this.usedNativeComps.reduce((str, name) => str + `<element name="taro-${name}" src="./components-harmony/${name}/index.hml"></element>\n`, '')
 
     return `<element name="container" src="./index.hml"></element>
 ${elements}
@@ -75,6 +76,7 @@ ${elements}
       case 'static-view':
       case 'pure-view':
       case 'view':
+      case 'swiper-item':
         nodeName = 'div'
         break
       case 'static-text':
@@ -86,6 +88,13 @@ ${elements}
       default:
         nodeName = comp.nodeName
         break
+    }
+
+    if (this.nativeComps.includes(nodeName)) {
+      nodeName = `taro-${nodeName}`
+      // 鸿蒙自定义组件不能传 class 属性
+      comp.attributes.cls = comp.attributes.class
+      delete comp.attributes.class
     }
 
     const res = `
