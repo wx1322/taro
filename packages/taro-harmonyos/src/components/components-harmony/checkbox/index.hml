@@ -1,1 +1,8 @@
-<input type="checkbox"></input>
+<input
+  id="{{id}}"
+  class="{{cls}}"
+  type="checkbox"
+  checked="{{checked}}"
+  disabled="{{disabled}}"
+  @change="onChange"
+></input>

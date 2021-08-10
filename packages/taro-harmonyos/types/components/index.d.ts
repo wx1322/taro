@@ -1,4 +1,7 @@
 export declare const components: {
+    Checkbox: {
+        'group-id': string;
+    };
     Span: {};
     Tabs: {
         index: string;
