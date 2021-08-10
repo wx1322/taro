@@ -168,15 +168,17 @@ export class TaroRootElement extends TaroElement {
             // eslint-disable-next-line no-console
             console.log('setData:', data)
           }
-          ctx.setData(data, () => {
-            perf.stop(SET_DATA)
-            if (!this.pendingFlush) {
-              this.flushUpdateCallback()
-            }
-            if (initRender) {
-              perf.stop(PAGE_INIT)
-            }
+
+          Object.keys(data).forEach(path => {
+            (ctx as any).$set(path, data[path])
           })
+          perf.stop(SET_DATA)
+          if (!this.pendingFlush) {
+            this.flushUpdateCallback()
+          }
+          if (initRender) {
+            perf.stop(PAGE_INIT)
+          }
         }
       }
     }, 0)

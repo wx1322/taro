@@ -118,7 +118,9 @@ export function eventHandler (event: MpEvent) {
     event.currentTarget = event.target
   }
 
-  const node = document.getElementById(event.currentTarget.id)
+  const id: string = event.currentTarget ? event.currentTarget.id : (event.detail.id as string)
+
+  const node = document.getElementById(id)
   if (node) {
     const dispatch = () => {
       const e = createEvent(event, node)

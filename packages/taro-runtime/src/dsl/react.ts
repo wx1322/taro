@@ -4,10 +4,9 @@ import container from '../container'
 import SERVICE_IDENTIFIER from '../constants/identifiers'
 import { Current } from '../current'
 import { document } from '../bom/document'
-import { getPageInstance, injectPageInstance, safeExecute, addLeadingSlash } from './common'
+import { injectPageInstance, safeExecute, addLeadingSlash } from './common'
 import { isBrowser } from '../env'
 import { incrementId } from '../utils'
-import { HOOKS_APP_ID } from '../constants'
 import { eventHandler } from '../dom/event'
 
 import type { AppConfig, PageInstance } from '@tarojs/taro'
@@ -247,7 +246,7 @@ export function createReactApp (App: React.ComponentClass, react: typeof React, 
       value: config
     },
 
-    onLaunch: {
+    onCreate: {
       enumerable: true,
       writable: true,
       value (options) {
@@ -283,67 +282,9 @@ export function createReactApp (App: React.ComponentClass, react: typeof React, 
           Object.defineProperties(this, descriptors)
         }
         this.$app = app
-
-        if (app != null && isFunction(app.onLaunch)) {
-          app.onLaunch(options)
-        }
-      }
-    },
-
-    onShow: {
-      enumerable: true,
-      writable: true,
-      value (options) {
-        const app = ref.current
-        Current.router = {
-          params: options?.query,
-          ...options
-        }
-        if (app != null && isFunction(app.componentDidShow)) {
-          app.componentDidShow(options)
-        }
-
-        // app useDidShow
-        triggerAppHook('onShow')
-      }
-    },
-
-    onHide: {
-      enumerable: true,
-      writable: true,
-      value (options: unknown) {
-        const app = ref.current
-        if (app != null && isFunction(app.componentDidHide)) {
-          app.componentDidHide(options)
-        }
-
-        // app useDidHide
-        triggerAppHook('onHide')
-      }
-    },
-
-    onPageNotFound: {
-      enumerable: true,
-      writable: true,
-      value (res: unknown) {
-        const app = ref.current
-        if (app != null && isFunction(app.onPageNotFound)) {
-          app.onPageNotFound(res)
-        }
       }
     }
   })
-
-  function triggerAppHook (lifecycle) {
-    const instance = getPageInstance(HOOKS_APP_ID)
-    if (instance) {
-      const app = ref.current
-      const func = hooks.getLifecycle(instance, lifecycle)
-      if (Array.isArray(func)) {
-        func.forEach(cb => cb.apply(app))
-      }
-    }
-  }
 
   Current.app = app
   return Current.app
